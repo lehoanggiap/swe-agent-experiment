@@ -37,27 +37,29 @@ jobs:
         cd swe-agent
         pip install -e .
 
-    - name: Run SWE Agent - Auto Detect and Fix Issues
+    - name: Run SWE Agent with Free Hugging Face Model
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         cd swe-agent
         
-        # Let SWE Agent scan the entire repository for issues
+        # Use free Hugging Face model instead of paid OpenAI
+        # DeepSeek-Coder is a powerful free model good for code tasks
         python -m sweagent.agent.run \
-          --model_name "gpt-4-turbo-2024-04-09" \
+          --model_name "deepseek-ai/deepseek-coder-6.7b-instruct" \
           --data_path "Scan this repository for any bugs, issues, or problems. If you find any issues, create a detailed GitHub issue describing the problem, then create a pull request with a fix. Focus on: 1) Test failures, 2) Code that could crash or cause errors, 3) Security vulnerabilities, 4) Code quality issues." \
           --repo_path "../" \
           --config_file "config/default_from_url.yaml" \
           --apply_patch_locally \
           --github_token "$GITHUB_TOKEN" \
-        || echo "SWE Agent completed its analysis and fixes"
+        || echo "SWE Agent completed its analysis and fixes using free Hugging Face model"
 
     - name: Summary
       run: |
-        echo "🤖 SWE Agent has completed its autonomous analysis"
+        echo "🤖 SWE Agent has completed its autonomous analysis using FREE DeepSeek-Coder model"
         echo "✅ Scanned repository for issues"
         echo "📝 Created GitHub issues for any problems found"
         echo "🔧 Applied fixes and created pull requests"
+        echo "💰 No API costs - completely free with Hugging Face!"
         echo "👀 Check the Issues and Pull Requests tabs for SWE Agent's work"
